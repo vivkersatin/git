@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>簡單計算機</title>
+</head>
+<body>
+    <h1>簡單計算機</h1>
+    <form method="post">
+        <label for="num1">第一個數字:</label>
+        <input type="text" id="num1" name="num1" required>
+        <label for="operation">操作 (+, -, *, /):</label>
+        <select id="operation" name="operation">
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+        </select>
+        <label for="num2">第二個數字:</label>
+        <input type="text" id="num2" name="num2" required>
+        <button type="submit">計算</button>
+    </form>
+    {% if result is not none %}
+        <h2>結果: {{ result }}</h2>
+    {% endif %}
+</body>
+</html>
