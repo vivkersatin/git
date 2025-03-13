@@ -1,0 +1,20 @@
+[
+        {
+            "title": "The Lord of the Rings",
+            "author": "J.R.R. Tolkien",
+            "publication_date": "1954-1955",
+            "copies": 10
+        },
+        {
+            "title": "Pride and Prejudice",
+            "author": "Jane Austen",
+            "publication_date": "1813",
+            "copies": 5
+        },
+        {
+            "title": "1984",
+            "author": "George Orwell",
+            "publication_date": "1949",
+            "copies": 8
+        }
+    ]
