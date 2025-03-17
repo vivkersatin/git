@@ -1,0 +1,17 @@
+{
+    "knowledge_entries": [],
+    "users": [
+        {
+            "id": 1,
+            "username": "admin",
+            "password": "admin",
+            "is_admin": true
+        },
+        {
+            "id": 2,
+            "username": "test",
+            "password": "test",
+            "is_admin": false
+        }
+    ]
+}
