@@ -26,6 +26,15 @@
             ],
             "solution": "建議請半小時後重試，或至帳號申設手動解鎖",
             "image_url": ""
+        },
+        {
+            "id": 4,
+            "category": "EPARK",
+            "keywords": [
+                "2002"
+            ],
+            "solution": "通報智宇，與實體卡片系統有關",
+            "image_url": ""
         }
     ],
     "users": [
