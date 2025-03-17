@@ -47,15 +47,7 @@
 </head>
 <body>
     <h1>編輯知識庫條目</h1>
-    <form method="post">
-        <label for="category">類別：</label>
-        <input type="text" id="category" name="category" value="{{ entry.category }}" required>
-        <label for="keywords">關鍵字 (以逗號分隔)：</label>
-        <input type="text" id="keywords" name="keywords" value="{{ ','.join(entry.keywords) }}" required>
-        <label for="solution">解決方案：</label>
-        <textarea id="solution" name="solution" rows="5" required>{{ entry.solution }}</textarea>
-        <label for="image_url">圖片 URL (可選)：</label>
-        <input type="file" id="image_url" name="image_url">
+    <form method="post" enctype="multipart/form-data">
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -105,7 +97,7 @@
 </head>
 <body>
     <h1>編輯知識庫條目</h1>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <label for="category">類別：</label>
         <input type="text" id="category" name="category" value="{{ entry.category }}" required>
         <label for="keywords">關鍵字 (以逗號分隔)：</label>

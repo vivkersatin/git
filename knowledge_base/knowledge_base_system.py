@@ -10,45 +10,6 @@ from werkzeug.utils import secure_filename
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
-# -*- coding: utf-8 -*-
-import json
-import os
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-import nltk
-from werkzeug.utils import secure_filename
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-app = Flask(__name__, static_folder='static')
-app.secret_key = os.urandom(24)  # 產生一個隨機的 secret key
-# -*- coding: utf-8 -*-
-import json
-import os
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-import nltk
-from werkzeug.utils import secure_filename
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-# -*- coding: utf-8 -*-
-import json
-import os
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-import nltk
-from werkzeug.utils import secure_filename
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.urandom(24)  # 產生一個隨機的 secret key
@@ -190,7 +151,15 @@ def edit_entry(entry_id):
         entry['category'] = request.form['category']
         entry['keywords'] = request.form['keywords'].split(',')
         entry['solution'] = request.form['solution']
-        entry['image_url'] = request.form['image_url']
+        image_file = request.files['image_url']
+        if image_file:
+            # 儲存圖片到伺服器
+            image_filename = secure_filename(image_file.filename)
+            image_path = os.path.join('static/images', image_filename)
+            image_file.save(image_path)
+            entry['image_url'] = url_for('static', filename=f'images/{image_filename}')
+        else:
+            entry['image_url'] = request.form['image_url']
         save_database(data)
         return redirect(url_for('index'))
     return render_template('edit_entry.html', entry=entry)
