@@ -1,0 +1,54 @@
+{
+    "knowledge_entries": [
+        {
+            "id": 1,
+            "category": "EPARK",
+            "keywords": [
+                "上班地點錯誤"
+            ],
+            "solution": "請洽人資重新設定",
+            "image_url": "/static/images/EPARK_.jpg"
+        },
+        {
+            "id": 2,
+            "category": "MAGENT",
+            "keywords": [
+                "信任"
+            ],
+            "solution": "請開啟設定 > 一般 > VPN 與裝置 > 信任企業級 APP",
+            "image_url": ""
+        },
+        {
+            "id": 3,
+            "category": "MAGENT",
+            "keywords": [
+                "帳號密碼錯誤"
+            ],
+            "solution": "建議請半小時後重試，或至帳號申設手動解鎖",
+            "image_url": ""
+        },
+        {
+            "id": 4,
+            "category": "EPARK",
+            "keywords": [
+                "2002"
+            ],
+            "solution": "通報智宇，與實體卡片系統有關",
+            "image_url": ""
+        }
+    ],
+    "users": [
+        {
+            "id": 1,
+            "username": "admin",
+            "password": "admin",
+            "is_admin": true
+        },
+        {
+            "id": 2,
+            "username": "test",
+            "password": "test",
+            "is_admin": false
+        }
+    ]
+}
