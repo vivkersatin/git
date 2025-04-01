@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
 # 讀取本機HTML檔案
-with open("C:\\learn\\外1150324.html", "r", encoding='utf-8') as file:
+with open("C:\\learn\\1140401.htm", "r", encoding='utf-8') as file:
 
     content = file.read()
 
