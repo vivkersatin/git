@@ -1,0 +1,8 @@
+[
+    {
+        "title": "book1",
+        "author": "bookuser",
+        "isbn": "00001",
+        "is_borrowed": false
+    }
+]
