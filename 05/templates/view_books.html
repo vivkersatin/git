@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Books</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>Books in Library</h1>
+    </header>
+    <main>
+        <ul>
+            {% for book in books %}
+            <li>{{ book[1] }} by {{ book[2] }} ({{ book[3] }})</li>
+            {% endfor %}
+        </ul>
+        <a href="/">Go back to Home</a>
+    </main>
+</body>
+</html>
