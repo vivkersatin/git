@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刪除書籍</title>
+</head>
+<body>
+    <h1>刪除書籍</h1>
+    <form method="POST">
+        <input type="hidden" name="id" value="{{ book.id }}">
+        <p>你確定要刪除書籍 "{{ book.title }}" 嗎？</p>
+        <input type="submit" value="確認刪除">
+    </form>
+    <a href="{{ url_for('index') }}">返回書籍列表</a>
+</body>
+</html>

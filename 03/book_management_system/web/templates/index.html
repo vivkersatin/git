@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>書籍管理系統</title>
+</head>
+<body>
+    <h1>書籍列表</h1>
+    <ul>
+    {% for book in books %}
+        <li>
+            {{ book.title }} - {{ book.author }} - {{ book.year }}
+            <a href="{{ url_for('update', id=book.id) }}">更新</a>
+            <a href="{{ url_for('delete', id=book.id) }}">刪除</a>
+        </li>
+    {% endfor %}
+    </ul>
+    <a href="{{ url_for('add') }}">添加新書籍</a>
+</body>
+</html>
