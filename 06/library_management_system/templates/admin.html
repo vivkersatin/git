@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理員界面</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>管理員界面</h1>
+    <h2>書籍列表</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>書名</th>
+            <th>作者</th>
+            <th>ISBN</th>
+            <th>狀態</th>
+        </tr>
+        {% for book in books %}
+        <tr>
+            <td>{{ book[0] }}</td>
+            <td>{{ book[1] }}</td>
+            <td>{{ book[2] }}</td>
+            <td>{{ book[3] }}</td>
+            <td>{{ book[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>借閱記錄</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>書籍ID</th>
+            <th>用戶名</th>
+            <th>借閱日期</th>
+            <th>歸還日期</th>
+        </tr>
+        {% for borrowing in borrowings %}
+        <tr>
+            <td>{{ borrowing[0] }}</td>
+            <td>{{ borrowing[1] }}</td>
+            <td>{{ borrowing[2] }}</td>
+            <td>{{ borrowing[3] }}</td>
+            <td>{{ borrowing[4] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="{{ url_for('index') }}">返回首頁</a>
+</body>
+</html>

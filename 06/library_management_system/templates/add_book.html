@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加書籍</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>添加書籍</h1>
+    <form method="POST">
+        <label for="title">書名:</label>
+        <input type="text" id="title" name="title" required><br>
+        <label for="author">作者:</label>
+        <input type="text" id="author" name="author" required><br>
+        <label for="isbn">ISBN:</label>
+        <input type="text" id="isbn" name="isbn" required><br>
+        <input type="submit" value="添加">
+    </form>
+    <a href="{{ url_for('index') }}">返回首頁</a>
+</body>
+</html>

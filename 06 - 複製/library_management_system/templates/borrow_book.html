@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>借閱書籍</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>借閱書籍</h1>
+    <form method="POST">
+        <label for="book_id">書籍ID:</label>
+        <input type="text" id="book_id" name="book_id" required><br>
+        <label for="user_name">用戶名:</label>
+        <input type="text" id="user_name" name="user_name" required><br>
+        <label for="borrow_date">借閱日期:</label>
+        <input type="date" id="borrow_date" name="borrow_date" required><br>
+        <input type="submit" value="借閱">
+    </form>
+    <a href="{{ url_for('index') }}">返回首頁</a>
+</body>
+</html>

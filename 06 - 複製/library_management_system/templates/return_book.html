@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歸還書籍</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>歸還書籍</h1>
+    <form method="POST">
+        <label for="book_id">書籍ID:</label>
+        <input type="text" id="book_id" name="book_id" required><br>
+        <label for="return_date">歸還日期:</label>
+        <input type="date" id="return_date" name="return_date" required><br>
+        <input type="submit" value="歸還">
+    </form>
+    <a href="{{ url_for('index') }}">返回首頁</a>
+</body>
+</html>
