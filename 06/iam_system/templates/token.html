@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOKEN - IAM系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>您的TOKEN</h1>
+        <p>以下是您的TOKEN，請妥善保存：</p>
+        <textarea readonly class="token-box">{{ token }}</textarea>
+        <p><a href="{{ url_for('index') }}" class="btn">返回首頁</a></p>
+    </div>
+</body>
+</html>
