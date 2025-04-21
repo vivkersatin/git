@@ -81,6 +81,28 @@ def admin():
     conn.close()
     return render_template('admin.html', books=books, borrowings=borrowings)
 
+@app.route('/books', methods=['GET'])
+def get_books():
+    try:
+        conn = sqlite3.connect('library.db')
+        print("Successfully connected to library.db")
+        c = conn.cursor()
+        print("Cursor created")
+        c.execute("SELECT id, title, author, status FROM books")
+        print("Query executed")
+        books = c.fetchall()
+        print(f"Fetched {len(books)} books")
+        conn.close()
+        books_text = "\n".join([f"ID: {book[0]}, Title: {book[1]}, Author: {book[2]}, Status: {book[3]}" for book in books])
+        return f"書籍列表:\n{books_text}"
+    except Exception as e:
+        print(f"Error in /books endpoint: {str(e)}")
+        return f"無法獲取書籍列表: {str(e)}", 500
+
+@app.route('/test', methods=['GET'])
+def test_endpoint():
+    return "圖書管理系統測試端點正常運行"
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True, port=5001)

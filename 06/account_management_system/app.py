@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -76,6 +76,18 @@ def admin():
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('index'))
+
+@app.route('/check_user/<username>', methods=['GET'])
+def check_user(username):
+    conn = sqlite3.connect('accounts.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = c.fetchone()
+    conn.close()
+    if user:
+        return jsonify({'status': 'success', 'message': '用戶存在'}), 200
+    else:
+        return jsonify({'status': 'error', 'message': '用戶不存在'}), 404
 
 if __name__ == '__main__':
     init_db()

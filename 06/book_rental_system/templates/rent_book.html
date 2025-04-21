@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>租書 - 租書系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>租書系統 - 租書</h1>
+    </header>
+    <nav>
+        <a href="{{ url_for('index') }}">首頁</a>
+        <a href="{{ url_for('login') }}">登錄</a>
+        <a href="{{ url_for('rent_book') }}">租書</a>
+        <a href="{{ url_for('return_book') }}">還書</a>
+    </nav>
+    <div class="container">
+        <h2>租借書籍</h2>
+        <h3>可租借書籍列表</h3>
+        {% if books %}
+            <form method="POST" action="{{ url_for('rent_book') }}">
+                <input type="hidden" name="username" value="{{ current_user if current_user else '' }}">
+                <table border="1">
+                    <tr>
+                        <th>選擇</th>
+                        <th>ID</th>
+                        <th>書名</th>
+                        <th>作者</th>
+                        <th>狀態</th>
+                    </tr>
+                    {% for book in books %}
+                        {% if book.status == '可用' %}
+                            <tr>
+                                <td><input type="radio" name="book_id" value="{{ book.id }}" required></td>
+                                <td>{{ book.id }}</td>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.author }}</td>
+                                <td>{{ book.status }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td>-</td>
+                                <td>{{ book.id }}</td>
+                                <td>{{ book.title }}</td>
+                                <td>{{ book.author }}</td>
+                                <td>{{ book.status }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+                <button type="submit">租書</button>
+            </form>
+        {% else %}
+            <p>目前無法獲取書籍列表，請稍後再試。</p>
+            {% if error_message %}
+                <p class="error">{{ error_message }}</p>
+            {% endif %}
+            {% if test_message %}
+                <p class="error">{{ test_message }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+</body>
+</html>

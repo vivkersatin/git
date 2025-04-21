@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>租書系統</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>歡迎使用租書系統</h1>
+    </header>
+    <nav>
+        <a href="{{ url_for('index') }}">首頁</a>
+        <a href="{{ url_for('login') }}">登錄</a>
+        <a href="{{ url_for('rent_book') }}">租書</a>
+        <a href="{{ url_for('return_book') }}">還書</a>
+    </nav>
+    <div class="container">
+        <h2>系統介紹</h2>
+        <p>這是一個簡單的租書系統，您可以通過登錄後租借和歸還書籍。</p>
+    </div>
+</body>
+</html>
