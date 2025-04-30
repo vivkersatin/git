@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres_hr_db:
+    image: postgres:13
+    container_name: hr_db
+    environment:
+      POSTGRES_DB: hr_database
+      POSTGRES_USER: hr_user
+      POSTGRES_PASSWORD: hr_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432" # 將本機 5432 映射到容器的 5432，方便本地連接測試
+    networks:
+      - integration_net
+
+  keycloak_iam:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: iam_system
+    command: start-dev # 使用開發模式啟動，方便測試
+    environment:
+      KC_DB: postgres # Keycloak 也可以使用自己的資料庫，這裡為了簡單分開
+      # --- 加入以下資料庫連接設定 ---
+      KC_DB_URL_HOST: postgres_hr_db  # 資料庫服務的名稱
+      KC_DB_URL_DATABASE: hr_database # 資料庫名稱 (與 postgres_hr_db 服務中的 POSTGRES_DB 一致)
+      KC_DB_USERNAME: hr_user         # 資料庫使用者 (與 postgres_hr_db 服務中的 POSTGRES_USER 一致)
+      KC_DB_PASSWORD: hr_password     # 資料庫密碼 (與 postgres_hr_db 服務中的 POSTGRES_PASSWORD 一致)
+      KEYCLOAK_ADMIN: admin # Keycloak 管理員帳號
+      KEYCLOAK_ADMIN_PASSWORD: admin # Keycloak 管理員密碼
+    ports:
+      - "8081:8080" # Keycloak 預設埠
+    depends_on:
+      - postgres_hr_db # 可以不依賴，但邏輯上 IAM 可能需要 HR 資料庫先啟動
+    networks:
+      - integration_net
+
+networks:
+  integration_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
