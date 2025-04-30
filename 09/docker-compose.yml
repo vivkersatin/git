@@ -1,0 +1,62 @@
+services:
+  orangehrm:
+    image: orangehrm/orangehrm
+    container_name: orangehrm
+    ports:
+      - "80:80"
+    environment:
+      - ORG_DB_HOST=mysql
+      - ORG_DB_PORT=3306
+      - ORG_DB_NAME=orangehrm
+      - ORG_DB_USERNAME=orangehrm_user
+      - ORG_DB_PASSWORD=orangehrm_password
+    depends_on:
+      - mysql
+    networks:
+      - app_network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    ports:
+      - "8082:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: start-dev
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8083:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - orangehrm
+      - keycloak
+    networks:
+      - app_network
+    command: /bin/sh -c "sleep 10 && nginx -g 'daemon off;'"
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: orangehrm
+      MYSQL_USER: orangehrm_user
+      MYSQL_PASSWORD: orangehrm_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mysql_data:

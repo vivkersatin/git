@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>編輯人員</title>
+</head>
+<body>
+    <h1>編輯人員</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <form action="{{ url_for('edit', id=personnel.id) }}" method="post">
+        <label for="name">姓名:</label>
+        <input type="text" id="name" name="name" value="{{ personnel.name }}" required><br>
+        <label for="employee_number">員工編號:</label>
+        <input type="text" id="employee_number" name="employee_number" value="{{ personnel.employee_number }}" required><br>
+        <label for="department">部門:</label>
+        <input type="text" id="department" name="department" value="{{ personnel.department }}" required><br>
+        <label for="position">職位:</label>
+        <input type="text" id="position" name="position" value="{{ personnel.position }}" required><br>
+        <label for="contact">聯絡方式:</label>
+        <input type="text" id="contact" name="contact" value="{{ personnel.contact }}" required><br>
+        <input type="submit" value="更新">
+    </form>
+    <a href="{{ url_for('index') }}">返回列表</a>
+</body>
+</html>
