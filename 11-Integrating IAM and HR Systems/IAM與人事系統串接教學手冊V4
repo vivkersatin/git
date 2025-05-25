@@ -1,0 +1,427 @@
+# IAM與人事系統串接教學手冊
+
+## 目錄
+
+1. [前言](#前言)
+2. [理論基礎](#理論基礎)
+3. [環境準備](#環境準備)
+4. [實作步驟](#實作步驟)
+5. [擴展與應用](#擴展與應用)
+6. [常見問題與解決方案](#常見問題與解決方案)
+7. [參考資源](#參考資源)
+
+## 前言
+
+本教學旨在幫助IT管理員、系統架構師和開發人員理解並實作IAM（身份識別與存取管理）系統與人事系統的整合。通過這個實作練習，您將學習如何建立一個基於開源軟體的IAM與HR系統整合環境，並了解企業中常見的身份管理流程與最佳實踐。
+
+隨著企業數位轉型的推進，系統整合成為關鍵挑戰。特別是IAM系統與人事系統的整合，對於確保員工生命週期管理的自動化、提高資訊安全性以及簡化存取控制都至關重要。
+
+## 理論基礎
+
+### IAM系統概述
+
+IAM（Identity and Access Management）系統負責管理數位身份及其存取權限。主要功能包括：
+
+1. **身份管理**：創建、修改、刪除使用者帳號
+2. **認證**：驗證使用者身份（密碼、多因素認證等）
+3. **授權**：管理使用者對資源的存取權限
+4. **集中式存取控制**：統一管理多系統的存取政策
+5. **審計與合規**：記錄並監控身份和存取活動
+
+### 人事系統概述
+
+HR（Human Resources）系統是企業管理員工資訊的核心系統，包含：
+
+1. **員工資料管理**：基本資料、聯絡方式、職位等
+2. **組織結構**：部門、團隊、報告關係等
+3. **員工生命週期**：入職、調職、離職等流程
+4. **薪資與福利管理**：工資、保險、休假等
+5. **績效評估**：目標設定、評估、反饋等
+
+### 系統整合的必要性
+
+IAM與HR系統整合的主要優勢：
+
+1. **自動化身份生命週期**：員工入職自動創建帳號，離職自動停用
+2. **資料一致性**：確保兩系統的使用者資料同步
+3. **基於角色的存取控制**：根據職位、部門自動分配權限
+4. **合規性**：簡化審計和權限審查流程
+5. **提高安全性**：減少過時帳號和權限蔓延
+
+### 常見整合模式
+
+1. **API整合**：通過應用程式介面直接連接兩系統
+2. **事件驅動整合**：HR系統中的變更觸發IAM系統執行相應操作
+3. **批次處理**：定期同步更新兩系統資料
+4. **中介軟體**：使用專用工具作為橋樑連接兩系統
+5. **目錄同步**：將HR資料同步到目錄服務（如LDAP），IAM系統再與目錄服務整合
+
+## 環境準備
+
+### 技術堆棧
+
+本教學使用的主要開源工具：
+
+1. **Keycloak**：功能強大的IAM解決方案
+   - 提供身份認證、單點登入、社交登入
+   - 支援多種協議（SAML, OAuth, OIDC等）
+   - 完整的API用於程式整合
+
+2. **OrangeHRM**：完善的人事管理系統
+   - 提供員工資訊管理
+   - 支援組織結構定義
+   - 包含人事流程管理功能
+
+3. **工具與技術**：
+   - Docker & Docker Compose：容器化部署
+   - Python：用於開發整合腳本
+   - MySQL：資料庫
+   - NGINX：Web伺服器與反向代理
+
+### 系統需求
+
+確保您的環境滿足以下條件：
+
+- 64位元作業系統（Linux, MacOS, Windows）
+- Docker 20.10.0或更高版本
+- Docker Compose 1.29.0或更高版本
+- 至少4GB可用RAM
+- 至少20GB可用磁碟空間
+- 穩定的網路連接
+
+### 各操作系統的環境配置
+
+#### CentOS 7/8環境配置
+
+```bash
+# 安裝Docker
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install docker-ce docker-ce-cli containerd.io
+
+# 安裝Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# 啟動Docker服務
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# 設定防火牆
+sudo firewall-cmd --permanent --add-port=8080-8081/tcp
+sudo firewall-cmd --reload
+
+# 將用戶加入docker群組(免sudo執行docker)
+sudo usermod -aG docker $USER
+# 注意：需要重新登入生效
+```
+
+#### Ubuntu 20.04/22.04環境配置
+
+```bash
+# 安裝Docker
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install -y docker-ce
+
+# 安裝Docker Compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+# 啟動Docker服務
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# 設定防火牆(如果啟用了UFW)
+sudo ufw allow 8080/tcp
+sudo ufw allow 8081/tcp
+
+# 將用戶加入docker群組(免sudo執行docker)
+sudo usermod -aG docker $USER
+# 注意：需要重新登入生效
+```
+
+#### Windows環境配置
+
+1. **安裝Docker Desktop for Windows**
+   - 訪問[Docker官網](https://www.docker.com/products/docker-desktop/)下載最新版本
+   - 確保您的Windows版本支援WSL 2
+   - 安裝過程中選擇"使用WSL 2"選項
+   - 安裝完成後重啟電腦
+
+2. **配置Docker Desktop**
+   - 啟動Docker Desktop應用程式
+   - 進入設置，在"Resources"→"WSL Integration"中啟用WSL 2整合
+   - 分配至少4GB的記憶體(建議)
+   - 在"General"設置中啟用"Start Docker Desktop when you log in"
+
+3. **處理防火牆提示**
+   - 首次啟動時，Windows安全防火牆可能會彈出提示
+   - 確保允許Docker在專用和公用網路上通訊
+   
+4. **檢查Docker服務**
+   - 打開命令提示符或PowerShell
+   - 運行`docker --version`和`docker-compose --version`確認安裝成功
+
+5. **使用WSL 2環境(推薦)**
+   - 在WSL 2中安裝Ubuntu子系統
+   - 在Ubuntu子系統中使用Linux版本的命令
+
+### 環境架構
+
+![環境架構圖](https://via.placeholder.com/800x500?text=Environment+Architecture)
+
+架構說明：
+- Keycloak容器：IAM系統，運行在8080端口
+- OrangeHRM容器：HR系統，運行在8081端口
+- 各自獨立的MySQL容器作為後端資料庫
+- NGINX作為反向代理（可選）
+- 共享Docker網路實現容器間通信
+- 整合腳本定期同步兩系統資料
+
+## 實作步驟
+
+### 步驟1：環境設置
+
+1. **建立專案目錄**
+   ```bash
+   mkdir iam-hr-integration
+   cd iam-hr-integration
+   ```
+
+2. **建立必要文件**
+   - 複製本教學提供的`docker-compose.yml`檔案到專案目錄
+   - 建立目錄結構：`mkdir -p nginx/conf.d nginx/certs scripts`
+   - 複製`nginx/conf.d/default.conf`配置檔案
+   - 複製`scripts/sync_users.py`整合腳本
+
+3. **執行環境設置腳本**
+   
+   **在Linux/macOS上：**
+   ```bash
+   # 安裝Docker環境（如果尚未安裝）
+   chmod +x os_setup.sh
+   sudo ./os_setup.sh
+   
+   # 啟動服務環境
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+   
+   **在Windows上：**
+   ```batch
+   REM 確保已安裝Docker Desktop並正在運行
+   REM 使用管理員權限執行命令提示符或PowerShell
+   setup.bat
+   ```
+   
+   **使用WSL 2（在Windows上）：**
+   ```bash
+   # 在WSL 2的Ubuntu環境中運行
+   chmod +x os_setup.sh
+   sudo ./os_setup.sh
+   
+   chmod +x setup.sh
+   ./setup.sh
+   ```
+
+### 步驟2：Keycloak基礎配置
+
+1. **登入Keycloak管理控制台**
+   - 訪問：http://localhost:8080
+   - 用戶名：admin
+   - 密碼：admin
+
+2. **創建新的Realm**
+   - 點擊左上角下拉選單 → "Create Realm"
+   - 名稱：organization
+   - 點擊"Create"
+
+3. **創建基本角色**
+   - 在左側導航選擇"Roles" → "Create role"
+   - 創建以下角色：
+     - user：基本使用者角色
+     - admin：系統管理員角色
+     - hr-manager：HR管理者角色
+     - developer：開發者角色
+
+4. **創建客戶端應用**
+   - 選擇"Clients" → "Create client"
+   - Client ID：hr-portal
+   - Client Protocol：openid-connect
+   - Root URL：http://localhost:8081
+   - 完成基本設定
+
+### 步驟3：OrangeHRM設置
+
+1. **訪問OrangeHRM安裝頁面**
+   - 訪問：http://localhost:8081
+   - 按照指示完成初始化設置
+
+2. **登入OrangeHRM**
+   - 用戶名：admin
+   - 密碼：admin123
+
+3. **建立組織結構**
+   - 建立部門：IT、HR、Development等
+   - 設置職位：System Administrator、HR Manager、Developer等
+
+4. **添加測試員工**
+   - 添加至少3名測試員工
+   - 確保包含姓名、電子郵件、部門、職位等完整信息
+
+### 步驟4：運行整合腳本
+
+1. **了解腳本功能**
+   - 審查`sync_users.py`腳本，理解其功能
+   - 腳本將OrangeHRM的員工資料同步到Keycloak
+   - 根據部門自動分配角色
+
+2. **運行腳本**
+   ```bash
+   docker run --rm -v "$(pwd)/scripts:/scripts" --network iam-hr-network python:3.9-slim python /scripts/sync_users.py
+   ```
+
+3. **驗證結果**
+   - 登入Keycloak管理控制台
+   - 查看"Users"部分，確認員工帳號已創建
+   - 檢查用戶角色是否正確分配
+
+### 步驟5：測試整合流程
+
+1. **新增員工測試**
+   - 在OrangeHRM中新增一名員工
+   - 運行同步腳本
+   - 確認新員工在Keycloak中自動創建
+
+2. **修改員工資料測試**
+   - 在OrangeHRM中修改某員工資料（如部門或職位）
+   - 運行同步腳本
+   - 確認Keycloak中相應用戶資料已更新，角色已調整
+
+3. **離職測試**
+   - 在OrangeHRM中將某員工標記為非活動狀態
+   - 運行同步腳本
+   - 確認Keycloak中該用戶已被停用
+
+## 擴展與應用
+
+### 實現自動化同步
+
+1. **設置定時任務**
+   ```bash
+   # 編輯crontab
+   crontab -e
+   
+   # 添加定時任務，每小時執行一次
+   0 * * * * docker run --rm -v "/path/to/scripts:/scripts" --network iam-hr-network python:3.9-slim python /scripts/sync_users.py >> /path/to/sync.log 2>&1
+   ```
+
+2. **擴展同步功能**
+   - 添加離職處理邏輯
+   - 實現組織結構同步
+   - 添加日誌和監控功能
+
+### 實現單點登入(SSO)
+
+1. **配置Keycloak作為身份提供者**
+   - 設置OrangeHRM為Keycloak的客戶端應用
+   - 配置重定向URI
+   - 設置適當的協議（如SAML或OIDC）
+
+2. **修改OrangeHRM驗證方式**
+   - 安裝OrangeHRM SSO插件
+   - 配置與Keycloak的連接參數
+   - 測試SSO登入流程
+
+### 實現細粒度授權
+
+1. **設計權限模型**
+   - 基於角色的存取控制(RBAC)
+   - 定義資源和操作權限
+
+2. **在Keycloak中實現**
+   - 創建複合角色
+   - 設置權限策略
+   - 定義資源伺服器
+
+3. **與應用程式集成**
+   - 使用OAuth範圍或OIDC聲明
+   - 實現授權檢查
+
+## 常見問題與解決方案
+
+### 同步問題
+
+**問題**: 部分用戶同步失敗
+**解決方案**:
+- 檢查API連接是否正常
+- 確認用戶資料完整性
+- 查看日誌了解詳細錯誤信息
+
+**問題**: 角色分配不正確
+**解決方案**:
+- 確認角色映射邏輯
+- 檢查部門資訊是否正確
+- 確認角色存在於Keycloak中
+
+### 系統連接問題
+
+**問題**: Keycloak無法連接到資料庫
+**解決方案**:
+- 確認資料庫容器運行狀態
+- 檢查網路連接
+- 驗證資料庫帳號密碼
+
+**問題**: 無法訪問OrangeHRM
+**解決方案**:
+- 檢查容器運行狀態
+- 確認端口映射正確
+- 檢查OrangeHRM日誌
+
+### 權限與安全問題
+
+**問題**: 使用者無法登入
+**解決方案**:
+- 確認用戶帳號已啟用
+- 檢查密碼是否正確設置
+- 檢查認證配置
+
+**問題**: 權限過於寬鬆
+**解決方案**:
+- 審查角色定義
+- 實現最小權限原則
+- 定期審計用戶權限
+
+## 參考資源
+
+### 官方文檔
+
+- [Keycloak官方文檔](https://www.keycloak.org/documentation)
+- [OrangeHRM文檔](https://www.orangehrm.com/resources/)
+- [Docker與Docker Compose文檔](https://docs.docker.com/)
+
+### 標準與最佳實踐
+
+- NIST Special Publication 800-63: Digital Identity Guidelines
+- ISO/IEC 27001: Information Security Management
+- OASIS標準: SAML, XACML, SPML
+
+### 進階學習資源
+
+- 書籍: "Identity Management: A Primer" by Graham Williamson
+- 書籍: "OAuth 2.0: The Definitive Guide" by Aaron Parecki
+- 線上課程: "Identity and Access Management" (Coursera)
+
+### 社群資源
+
+- Keycloak社群: [GitHub](https://github.com/keycloak/keycloak)
+- OrangeHRM社群: [GitHub](https://github.com/orangehrm/orangehrm)
+- Stack Overflow相關標籤: identity-management, keycloak, orangehrm
+
+---
+
+本教學手冊由[您的組織名稱]編著，僅供教育和學習目的使用。內容基於現有開源技術，可能隨時間而有所變化。請確保遵循最新的技術文檔和最佳實踐。

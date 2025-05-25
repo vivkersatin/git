@@ -1,0 +1,109 @@
+version: '3'
+
+services:
+  # MySQL for Keycloak
+  keycloak-db:
+    image: mysql:8.0
+    container_name: keycloak-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: keycloak
+    volumes:
+      - keycloak-mysql-data:/var/lib/mysql
+    networks:
+      - iam-hr-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Keycloak IAM
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    environment:
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://keycloak-db:3306/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HEALTH_ENABLED: true
+    command: 
+      - start-dev
+    ports:
+      - "8080:8080"
+    networks:
+      - iam-hr-network
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+
+  # MySQL for OrangeHRM
+  orangehrm-db:
+    image: mysql:5.7
+    container_name: orangehrm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: orangehrm
+      MYSQL_USER: orangehrm
+      MYSQL_PASSWORD: orangehrm
+    volumes:
+      - orangehrm-mysql-data:/var/lib/mysql
+    networks:
+      - iam-hr-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # OrangeHRM
+  orangehrm:
+    image: orangehrm/orangehrm:latest
+    container_name: orangehrm
+    environment:
+      MYSQL_HOST: orangehrm-db
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: orangehrm
+      MYSQL_USERNAME: orangehrm
+      MYSQL_PASSWORD: orangehrm
+      ORANGEHRM_ADMIN_USERNAME: admin
+      ORANGEHRM_ADMIN_PASSWORD: admin123
+    ports:
+      - "8081:80"
+    networks:
+      - iam-hr-network
+    depends_on:
+      orangehrm-db:
+        condition: service_healthy
+    volumes:
+      - orangehrm-data:/var/www/html
+
+  # NGINX Reverse Proxy (optional, for SSL termination in production)
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/nginx/certs
+    networks:
+      - iam-hr-network
+    depends_on:
+      - keycloak
+      - orangehrm
+
+networks:
+  iam-hr-network:
+    driver: bridge
+
+volumes:
+  keycloak-mysql-data:
+  orangehrm-mysql-data:
+  orangehrm-data:

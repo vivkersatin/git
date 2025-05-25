@@ -1,0 +1,172 @@
+# IAM與人事系統串接教學環境
+
+此專案提供一個完整的教學環境，用於學習和模擬IAM（身份識別與存取管理）系統與人事系統的串接。環境基於Docker容器化技術，包含Keycloak（IAM系統）與OrangeHRM（人事系統）兩個主要組件。
+
+## 環境架構
+
+![環境架構圖](https://via.placeholder.com/800x400?text=IAM-HR+Integration+Architecture)
+
+### 主要組件：
+
+1. **Keycloak**：開源的身份和存取管理解決方案
+   - 提供使用者認證與授權
+   - 支援多種認證協議（SAML, OAuth, OIDC等）
+   - 提供使用者、角色和權限管理
+
+2. **OrangeHRM**：開源人力資源管理系統
+   - 員工資料管理
+   - 組織結構管理
+   - 人事流程管理
+
+3. **整合腳本**：示範兩系統間的資料同步
+   - 使用者帳號自動建立與更新
+   - 角色與權限根據部門自動分配
+   - 展示IAM與HR系統整合的基本流程
+
+## 系統需求
+
+- Docker 20.10.0 或更高版本
+- Docker Compose 1.29.0 或更高版本
+- 至少4GB RAM
+- 至少20GB可用磁碟空間
+- 網際網路連線（用於下載Docker映像檔）
+
+## 安裝與設定
+
+### 步驟一：準備環境
+
+1. 安裝Docker與Docker Compose（如尚未安裝）
+2. 克隆此專案到本機：
+   ```
+   git clone https://github.com/yourusername/iam-hr-integration-demo.git
+   cd iam-hr-integration-demo
+   ```
+
+### 步驟二：啟動環境
+
+執行提供的設定腳本：
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+這個腳本會：
+- 檢查必要的依賴是否已安裝
+- 建立必要的目錄結構
+- 啟動所有Docker容器
+- 等待服務初始化完成
+- 顯示如何存取各服務的資訊
+
+### 步驟三：存取各系統
+
+環境啟動後，可通過以下URL存取各系統：
+
+- **Keycloak管理控制台**：http://localhost:8080
+  - 使用者名稱：`admin`
+  - 密碼：`admin`
+
+- **OrangeHRM**：http://localhost:8081
+  - 使用者名稱：`admin`
+  - 密碼：`admin123`
+
+## 教學內容
+
+### 1. 基本設定
+
+#### Keycloak設定
+
+1. **建立領域（Realm）**：
+   - 登入Keycloak管理控制台
+   - 建立新的Realm（例如"organization"）
+   - 設定基本屬性（如Token過期時間）
+
+2. **建立客戶端（Client）**：
+   - 在Realm中建立新的Client
+   - 設定客戶端協議（如OpenID Connect）
+   - 配置重定向URI與存取類型
+
+3. **建立角色（Roles）**：
+   - 建立組織需要的角色（如"hr-manager", "developer", "admin"等）
+   - 設定角色階層（角色繼承關係）
+
+#### OrangeHRM設定
+
+1. **基本設定**：
+   - 完成初始化設定
+   - 建立組織結構（部門、職位等）
+
+2. **建立員工資料**：
+   - 新增員工基本資料
+   - 設定部門與職位
+
+### 2. 系統整合
+
+使用提供的同步腳本執行系統整合：
+
+```bash
+docker run --rm -v "$(pwd)/scripts:/scripts" --network iam-hr-network python:3.9-slim python /scripts/sync_users.py
+```
+
+這個腳本會：
+1. 從OrangeHRM取得員工資料
+2. 在Keycloak中建立或更新對應的使用者
+3. 根據員工部門分配適當的角色
+
+### 3. 整合驗證
+
+1. 在OrangeHRM中新增或修改員工資料
+2. 執行同步腳本
+3. 驗證Keycloak中使用者資料是否同步更新
+4. 測試使用者登入與權限
+
+## 進階教學
+
+### 1. 實現自動化同步
+
+修改同步腳本，使其能夠：
+- 定期自動執行（如使用cron job）
+- 處理員工離職或狀態變更
+- 記錄同步結果與錯誤
+
+### 2. SSO整合
+
+設定Keycloak作為OrangeHRM的身份提供者：
+- 實現單一登入（SSO）
+- 配置OrangeHRM使用OAuth/OIDC認證
+
+### 3. 自訂使用者屬性
+
+在Keycloak中新增自訂屬性：
+- 儲存HR系統中的額外資料
+- 實現基於屬性的訪問控制（ABAC）
+
+## 故障排除
+
+### 常見問題
+
+1. **容器無法啟動**
+   - 檢查Docker日誌：`docker-compose logs`
+   - 確認端口沒有被其他服務占用
+
+2. **Keycloak無法連接到資料庫**
+   - 檢查資料庫容器狀態
+   - 確認資料庫初始化完成
+
+3. **同步腳本執行失敗**
+   - 檢查網路連接
+   - 確認API端點和憑證正確
+
+## 參考資源
+
+- [Keycloak官方文件](https://www.keycloak.org/documentation)
+- [OrangeHRM文件](https://www.orangehrm.com/resources/)
+- [系統整合最佳實踐](https://example.com/best-practices)
+- [Docker Compose官方文件](https://docs.docker.com/compose/)
+
+## 授權資訊
+
+此專案僅供教學使用，基於MIT授權發布。
+
+## 貢獻與回饋
+
+如有任何問題或改進建議，請提交Issue或Pull Request。
