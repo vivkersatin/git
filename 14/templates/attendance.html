@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>考勤記錄 - {{ date }}</title>
+</head>
+<body>
+    <h1>考勤記錄 - {{ date }}</h1>
+    <ul>
+        {% if attendance_details %}
+            {% set current_date = '' %}
+            {% for record in attendance_details %}
+                {% if record.date != current_date %}
+                    {% if not loop.first %}
+                        </ul>
+                    {% endif %}
+                    <li>日期: {{ record.date }}</li>
+                    <ul>
+                    {% set current_date = record.date %}
+                {% endif %}
+                <li>員工ID: {{ record.employee_id }}, 狀態: {{ record.status }}</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <li>該日期沒有考勤記錄。</li>
+        {% endif %}
+    </ul>
+    <a href="/">返回</a>
+</body>
+</html>

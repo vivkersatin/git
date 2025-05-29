@@ -1,0 +1,17 @@
+[
+    {
+        "employee_id": "1",
+        "date": "2025-05-27",
+        "status": "出勤"
+    },
+    {
+        "employee_id": "1",
+        "date": "2025-05-28",
+        "status": "出勤"
+    },
+    {
+        "employee_id": "2",
+        "date": "2025-05-27",
+        "status": "出勤"
+    }
+]

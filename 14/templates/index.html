@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>HR 系統</title>
+</head>
+<body>
+    <h1>員工列表</h1>
+    <ul>
+        {% for emp in employees %}
+            <li>{{ emp.name }} (ID: {{ emp.id }}) <a href="{{ url_for('remove_employee', id=emp.id) }}">刪除</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>新增員工</h2>
+    <form action="/add_employee" method="post">
+        <input type="text" name="name" placeholder="員工姓名" required>
+        <button type="submit">新增</button>
+    </form>
+
+    <h2>記錄考勤</h2>
+    <form action="/record_attendance" method="post">
+        <input type="number" name="employee_id" placeholder="員工ID" required>
+        <input type="date" name="date" required>
+        <select name="status" required>
+            <option value="出勤">出勤</option>
+            <option value="缺勤">缺勤</option>
+        </select>
+        <button type="submit">記錄考勤</button>
+    </form>
+
+    <h2>考勤記錄</h2>
+    <ul>
+        {% for record in attendance_records %}
+            <li>員工ID: {{ record.employee_id }}, 日期: {{ record.date }}, 狀態: {{ record.status }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
