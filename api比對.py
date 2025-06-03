@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import os
 
 # 讀取本機HTML檔案
-input_file_path = "C:\\learn\\1140508out.html"
+input_file_path = "C:\\learn\\1140529in.html"
 
 with open(input_file_path, "r", encoding='utf-8') as file:
     content = file.read()

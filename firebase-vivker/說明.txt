@@ -1,0 +1,2 @@
+
+所以我有新網頁的話 只要將檔案放入電腦本機的這個資料夾內的public內 再執行firebase deploy --only hosting 就能上傳網頁了
