@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>布告欄</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>布告欄</h1>
+    </header>
+    <main>
+        <ul>
+            {% for post in posts %}
+                <li><a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('create') }}">建立新貼文</a>
+    </main>
+    <footer>
+        <p>&copy; 2025 布告欄</p>
+    </footer>
+</body>
+</html>

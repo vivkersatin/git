@@ -132,9 +132,6 @@ mBMS.MO-CPVSP
 DSIS.IT-QLAPI
 ai-api-facade
 NIA-checkapplicant
-DSIS.IT-QLAPI
-ai-api-facade
-NIA-checkapplicant
 OAI-SMR-EquipNumQuery
 HiNetFax-FMS-ESHOP
 pos-collect

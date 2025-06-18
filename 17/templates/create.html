@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>建立新貼文</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>建立新貼文</h1>
+    </header>
+    <main>
+        <form method="post">
+            <label for="title">標題：</label>
+            <input type="text" id="title" name="title" required><br>
+            <label for="content">內容：</label>
+            <textarea id="content" name="content" required></textarea><br>
+            <button type="submit">發布</button>
+        </form>
+        <a href="{{ url_for('index') }}">返回布告欄</a>
+    </main>
+    <footer>
+        <p>&copy; 2025 布告欄</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ post.title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>{{ post.title }}</h1>
+    </header>
+    <main>
+        <p>{{ post.content }}</p>
+        <a href="{{ url_for('index') }}">返回布告欄</a>
+        <a href="{{ url_for('delete', post_id=post.id) }}">刪除貼文</a>
+    </main>
+    <footer>
+        <p>&copy; 2025 布告欄</p>
+    </footer>
+</body>
+</html>
